@@ -10,17 +10,20 @@
   <pre id="resultado"></pre>
 
   <script>
-    document.getElementById("btn").addEventListener("click", async () => {
-      try {
-        const res = await fetch("/.netlify/functions/proxy", {
-          method: "GET",
-        });
-        const data = await res.text();
-        document.getElementById("resultado").innerText = data;
-      } catch (error) {
-        document.getElementById("resultado").innerText = "Error: " + error;
-      }
+document.getElementById("btn").addEventListener("click", async () => {
+  try {
+    const res = await fetch("/.netlify/functions/proxy", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ usuario: "demo", clave: "1234" }) // ejemplo
     });
-  </script>
+    const data = await res.json();
+    document.getElementById("resultado").innerText = JSON.stringify(data, null, 2);
+  } catch (error) {
+    document.getElementById("resultado").innerText = "Error: " + error;
+  }
+});
+</script>
+
 </body>
 </html>
