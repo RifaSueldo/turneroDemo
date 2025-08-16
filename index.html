@@ -5,7 +5,7 @@
   <title>Panel TurnoX</title>
   <style>
     body { font-family: Arial, sans-serif; padding: 2rem; background: #f0f0f0; }
-    form, .panel { background: #fff; padding: 2rem; border-radius: 8px; max-width: 800px; margin: 1rem auto; }
+    form, .panel { background: #fff; padding: 2rem; border-radius: 8px; max-width: 900px; margin: 1rem auto; }
     input { padding: 0.5rem; margin-bottom: 1rem; width: 100%; }
     button { padding: 0.5rem 1rem; }
     table { width: 100%; border-collapse: collapse; margin-top: 1rem; }
@@ -28,7 +28,7 @@
 
   <!-- Panel -->
   <div class="panel hidden" id="panel">
-    <h2>Vendedores</h2>
+    <h2>Mis Datos</h2>
     <table id="tablaVendedores">
       <thead>
         <tr>
@@ -42,17 +42,16 @@
       <tbody></tbody>
     </table>
 
-    <h2>Plataformas</h2>
+    <h2>Mis Plataformas</h2>
     <table id="tablaPlataformas">
       <thead>
         <tr>
           <th>FechaHora</th>
-          <th>ID Vendedor</th>
           <th>Nombre</th>
           <th>Usuario</th>
           <th>Clave</th>
-          <th>Créditos</th>
-          <th>Editar Créditos</th>
+          <th>Agregar Créditos</th>
+          <th>Guardar</th>
         </tr>
       </thead>
       <tbody></tbody>
@@ -67,7 +66,7 @@
     const tablaVendedores = document.getElementById("tablaVendedores").querySelector("tbody");
     const tablaPlataformas = document.getElementById("tablaPlataformas").querySelector("tbody");
 
-    let vendedoresData = [];
+    let vendedorLogueado = null;
     let plataformasData = [];
 
     loginForm.addEventListener("submit", async (e) => {
@@ -85,16 +84,24 @@
         const data = await res.json();
 
         if (data.success) {
+          // Filtrar vendedor logueado
+          vendedorLogueado = data.vendedores.find(v => v.Nombre.toLowerCase() === usuario.toLowerCase() || v.ID_Vendedor.toLowerCase() === usuario.toLowerCase());
+
+          if (!vendedorLogueado) {
+            mensaje.style.color = "red";
+            mensaje.textContent = "No se encontró el vendedor logueado.";
+            return;
+          }
+
           mensaje.style.color = "green";
           mensaje.textContent = "¡Login exitoso!";
           loginForm.classList.add("hidden");
           panel.classList.remove("hidden");
 
-          // Guardamos datos
-          vendedoresData = data.vendedores;
-          plataformasData = data.plataformas;
+          // Filtrar plataformas solo del vendedor logueado
+          plataformasData = data.plataformas.filter(p => p.VendedorID === vendedorLogueado.ID_Vendedor);
 
-          renderVendedores();
+          renderVendedor();
           renderPlataformas();
         } else {
           mensaje.style.color = "red";
@@ -106,19 +113,18 @@
       }
     });
 
-    function renderVendedores() {
+    function renderVendedor() {
       tablaVendedores.innerHTML = "";
-      vendedoresData.forEach(v => {
-        const tr = document.createElement("tr");
-        tr.innerHTML = `
-          <td>${v.ID_Vendedor}</td>
-          <td>${v.Nombre}</td>
-          <td>${v.Creditos_Asignados}</td>
-          <td>${v.Creditos_Usados}</td>
-          <td>${v.Creditos_Disponibles}</td>
-        `;
-        tablaVendedores.appendChild(tr);
-      });
+      const v = vendedorLogueado;
+      const tr = document.createElement("tr");
+      tr.innerHTML = `
+        <td>${v.ID_Vendedor}</td>
+        <td>${v.Nombre}</td>
+        <td>${v.Creditos_Asignados}</td>
+        <td>${v.Creditos_Usados}</td>
+        <td>${v.Creditos_Disponibles}</td>
+      `;
+      tablaVendedores.appendChild(tr);
     }
 
     function renderPlataformas() {
@@ -127,11 +133,10 @@
         const tr = document.createElement("tr");
         tr.innerHTML = `
           <td>${p.FechaHora}</td>
-          <td>${p.VendedorID}</td>
           <td>${p.Nombre}</td>
-          <td>${p.usuario}</td>
-          <td>${p.clave}</td>
-          <td><input type="number" value="${p.creditos}" data-index="${i}" /></td>
+          <td><input type="text" value="${p.usuario}" data-index="${i}" /></td>
+          <td><input type="text" value="${p.clave}" data-index="${i}" /></td>
+          <td><input type="number" min="0" placeholder="Agregar" data-index="${i}" /></td>
           <td><button onclick="guardarCredito(${i})">Guardar</button></td>
         `;
         tablaPlataformas.appendChild(tr);
@@ -139,12 +144,38 @@
     }
 
     window.guardarCredito = function(i) {
-      const input = tablaPlataformas.querySelector(`input[data-index='${i}']`);
-      const nuevoCredito = Number(input.value);
-      plataformasData[i].creditos = nuevoCredito;
+      const usuarioInput = tablaPlataformas.querySelectorAll(`input[type='text']`)[i*2];
+      const claveInput = tablaPlataformas.querySelectorAll(`input[type='text']`)[i*2+1];
+      const agregarInput = tablaPlataformas.querySelectorAll(`input[type='number']`)[i];
 
-      alert(`Créditos actualizados localmente para ${plataformasData[i].Nombre}. Cuando envíes al GAS, se recalcularán los créditos.`);
-      // Aquí podrías hacer un fetch para enviar el cambio al GAS si quieres que se guarde automáticamente
+      const agregar = Number(agregarInput.value || 0);
+
+      if (agregar <= 0) {
+        alert("Ingrese un valor mayor a 0 para agregar créditos");
+        return;
+      }
+
+      if (agregar > Number(vendedorLogueado.Creditos_Disponibles)) {
+        alert("No tiene suficientes créditos disponibles para agregar esa cantidad");
+        return;
+      }
+
+      // Actualizamos los datos localmente
+      plataformasData[i].usuario = usuarioInput.value.trim();
+      plataformasData[i].clave = claveInput.value.trim();
+      plataformasData[i].creditos += agregar;
+      vendedorLogueado.Creditos_Usados = Number(vendedorLogueado.Creditos_Usados) + agregar;
+      vendedorLogueado.Creditos_Disponibles = Number(vendedorLogueado.Creditos_Disponibles) - agregar;
+
+      // Limpiamos input
+      agregarInput.value = "";
+
+      alert("Créditos agregados correctamente. Se descontaron de tus créditos disponibles.");
+
+      renderVendedor();
+      renderPlataformas();
+
+      // Aquí podés agregar fetch para enviar los cambios al GAS y que se guarde en la hoja
     }
   </script>
 
