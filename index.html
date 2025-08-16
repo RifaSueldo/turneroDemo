@@ -6,20 +6,28 @@
   <title>TurnoX - Cargar Créditos</title>
 </head>
 <body>
-  <h1>TurnoX - Cargar Créditos</h1>
+  <label for="cliente">Seleccionar cliente:</label>
+<select id="cliente">
+  <option value="cliente1">Cliente 1</option>
+  <option value="cliente2">Cliente 2</option>
+  <option value="cliente3">Cliente 3</option>
+</select>
 
-  <label for="cantidad">Cantidad de créditos:</label>
-  <input type="number" id="cantidad" value="1" min="1">
+<label for="cantidad">Cantidad de créditos:</label>
+<input type="number" id="cantidad" value="10" min="1">
 
-  <button id="cargarBtn">Cargar Créditos</button>
-
-  <p id="resultado"></p>
+<button id="btnCargar">Cargar Créditos</button>
+<div id="resultado"></div>
 
   <script>
-    btn.addEventListener("click", async () => {
-  const creditos = Number(input.value);
-  const cliente = document.getElementById("cliente").value; // si tenés input para cliente
-  if (creditos < 1) {
+   const btn = document.getElementById("btnCargar");
+const resultado = document.getElementById("resultado");
+
+btn.addEventListener("click", async () => {
+  const cantidad = Number(document.getElementById("cantidad").value);
+  const cliente = document.getElementById("cliente").value;
+
+  if (cantidad < 1) {
     resultado.textContent = "Ingrese una cantidad válida";
     return;
   }
@@ -28,13 +36,13 @@
     const res = await fetch("/.netlify/functions/proxy", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ accion: "cargarCreditos", cantidad: creditos, cliente })
+      body: JSON.stringify({ accion: "cargarCreditos", cantidad, cliente })
     });
 
     const data = await res.json();
 
     if (data.success) {
-      resultado.textContent = "Créditos cargados correctamente!";
+      resultado.textContent = `Créditos cargados correctamente para ${cliente}!`;
       console.log("Respuesta del proxy:", data);
     } else {
       resultado.textContent = "Error: " + (data.error || "desconocido");
@@ -45,6 +53,7 @@
     resultado.textContent = "Error de conexión al servidor";
   }
 });
+
   </script>
 </body>
 </html>
