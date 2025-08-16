@@ -1,1 +1,3 @@
+[build.environment]
+APP_SECRET = "mi_super_secreto"
 
