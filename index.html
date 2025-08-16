@@ -2,107 +2,25 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8">
-  <title>Login</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      height: 100vh;
-      background: #f4f4f4;
-    }
-    .login-box {
-      background: #fff;
-      padding: 2rem;
-      border-radius: 10px;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-      width: 300px;
-    }
-    .login-box h2 {
-      margin-bottom: 1rem;
-      text-align: center;
-    }
-    .login-box input {
-      width: 100%;
-      padding: 10px;
-      margin: .5rem 0;
-      border: 1px solid #ccc;
-      border-radius: 5px;
-    }
-    .login-box button {
-      width: 100%;
-      padding: 10px;
-      margin-top: 1rem;
-      background: #007BFF;
-      border: none;
-      color: white;
-      border-radius: 5px;
-      font-size: 16px;
-      cursor: pointer;
-    }
-    .login-box button:hover {
-      background: #0056b3;
-    }
-    .message {
-      margin-top: 1rem;
-      text-align: center;
-      font-size: 14px;
-    }
-  </style>
+  <title>Prueba Proxy Netlify</title>
 </head>
 <body>
-
-  <div class="login-box">
-    <h2>Login</h2>
-    <input type="text" id="usuario" placeholder="Usuario" required>
-    <input type="password" id="clave" placeholder="Clave" required>
-    <button onclick="login()">Ingresar</button>
-    <div class="message" id="message"></div>
-  </div>
+  <h1>Prueba de Proxy con Netlify</h1>
+  <button id="btn">Probar conexión</button>
+  <pre id="resultado"></pre>
 
   <script>
-    // Cambiá este URL por el de tu App Script desplegado (versión web)
-    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwEALHzjz_Okk9GIzEX0rqGhS2KV6y1AgMTBmKilraHEoC6ojH0mKrrQZepWw6Zrw/exec";
-
-    async function login() {
-      const usuario = document.getElementById("usuario").value.trim();
-      const clave = document.getElementById("clave").value.trim();
-      const message = document.getElementById("message");
-
-      if (!usuario || !clave) {
-        message.textContent = "Por favor complete ambos campos.";
-        message.style.color = "red";
-        return;
-      }
-
+    document.getElementById("btn").addEventListener("click", async () => {
       try {
-        const response = await fetch(SCRIPT_URL, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ usuario, clave })
+        const res = await fetch("/.netlify/functions/proxy", {
+          method: "GET",
         });
-        const data = await response.json();
-
-        if (data.success) {
-          message.textContent = "✅ Login exitoso";
-          message.style.color = "green";
-
-          // Acá podés redirigir a otra página o mostrar datos
-          console.log("Vendedores:", data.vendedores);
-          console.log("Plataformas:", data.plataformas);
-
-        } else {
-          message.textContent = "❌ Usuario o clave incorrectos";
-          message.style.color = "red";
-        }
-      } catch (err) {
-        console.error(err);
-        message.textContent = "⚠️ Error de conexión con el servidor";
-        message.style.color = "red";
+        const data = await res.text();
+        document.getElementById("resultado").innerText = data;
+      } catch (error) {
+        document.getElementById("resultado").innerText = "Error: " + error;
       }
-    }
+    });
   </script>
-
 </body>
 </html>
