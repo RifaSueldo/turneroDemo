@@ -78,6 +78,118 @@
       .navbar-menu { flex-direction: column; position:absolute; top:85px; right:2px; background: rgba(54,42,111,0.95); border-radius:8px; max-height:0; overflow:hidden; transition:max-height 0.4s ease-in-out;}
       .navbar-menu.active { max-height:300px; }
     }
+    /* Contenedor principal */
+.creditos-container {
+  max-width: 360px;
+  margin: 20px auto;
+  padding: 20px;
+  background: 
+    linear-gradient(
+      135deg,
+      #d0d0d0 0%, 
+      #f0f0f0 25%, 
+      #c0c0c0 50%, 
+      #e0e0e0 75%, 
+      #d0d0d0 100%
+    ),
+    repeating-linear-gradient(
+      0deg,
+      rgba(255,255,255,0.05) 0px,
+      rgba(255,255,255,0.05) 2px,
+      transparent 2px,
+      transparent 4px
+    );
+  background-blend-mode: overlay;
+  border-radius: 12px;
+  box-shadow: 0 0 10px rgba(0,0,0,0.08);
+  color: #533482;
+  font-family: "Montserrat", sans-serif;
+}
+
+/* Titulos y textos */
+.creditos-container h3 {
+  margin-top: 0;
+  margin-bottom: 15px;
+  font-size: 1.3em;
+  color: #6B6870;
+  text-align: center;
+}
+
+.creditos-container p {
+  margin: 8px 0;
+  font-size: 1em;
+  text-align: center;
+}
+
+/* Select de cliente */
+#cliente {
+  width: 100%;
+  padding: 10px;
+  font-size: 16px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  margin-bottom: 15px;
+  font-family: "Montserrat", sans-serif;
+  color: #533482;
+  cursor: pointer;
+}
+
+/* Input cantidad */
+#cantidadCargar {
+  width: 100%;
+  padding: 10px;
+  font-size: 16px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  margin-bottom: 15px;
+  font-family: "Montserrat", sans-serif;
+}
+
+/* Botón cargar créditos */
+#btnCargarCreditos {
+  width: 100%;
+  padding: 12px;
+  font-size: 16px;
+  font-weight: 700;
+  background: linear-gradient(135deg, #533482 0%, #482878 100%);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: transform 0.2s, box-shadow 0.3s, background 0.3s;
+  box-shadow: 0 4px 10px rgba(83,52,130,0.3);
+}
+
+#btnCargarCreditos:hover {
+  background: linear-gradient(135deg, #533482 0%, #6B6870 100%);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 15px rgba(83,52,130,0.5);
+}
+
+/* Mensaje de error / saldo insuficiente */
+#mensajeError {
+  color: #ff4d4d;
+  font-weight: 600;
+  text-align: center;
+  margin-top: 10px;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .creditos-container {
+    margin: 15px;
+    padding: 15px;
+  }
+  
+  .creditos-container h3 {
+    font-size: 1.2em;
+  }
+
+  #cliente, #cantidadCargar, #btnCargarCreditos {
+    font-size: 15px;
+    padding: 10px;
+  }
+}
   </style>
 </head>
 
@@ -98,33 +210,19 @@
   <button id="btnLogin">Ingresar y ver saldo</button>
   </header>
   
-<div class="creditos-panel">
-  <h3>Panel de Créditos</h3>
-
- 
-
-  <hr style="margin:14px 0; opacity:.3">
-
-  <!-- Saldo del vendedor -->
-  <label>Saldo disponible</label>
-  <input type="number" id="saldo" value="0" readonly>
-
-  <!-- Asignación a cliente -->
-  <label>Cliente</label>
+<div class="creditos-container">
+  <h3>Saldo disponible: <span id="saldo">0</span></h3>
+  <p>Cliente</p>
   <select id="cliente">
     <option value="cliente1">Cliente 1</option>
     <option value="cliente2">Cliente 2</option>
     <option value="cliente3">Cliente 3</option>
   </select>
-
-  <label>Cantidad a cargar</label>
-  <input type="number" id="cantidad" value="10" min="1">
-
-  <button id="cargarBtn">Cargar Créditos</button>
-
-  <div id="resultado"></div>
+  <p>Cantidad a cargar</p>
+  <input type="number" id="cantidadCargar" value="10" min="1" />
+  <button id="btnCargarCreditos">Cargar Créditos</button>
+  <p id="mensajeError"></p>
 </div>
-
 <script>
   const usuarioInput = document.getElementById("usuario");
   const claveInput   = document.getElementById("clave");
