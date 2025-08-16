@@ -74,41 +74,6 @@
   });
 </script>
 
-  <script>
-   const btn = document.getElementById("btnCargar");
-const resultado = document.getElementById("resultado");
 
-btn.addEventListener("click", async () => {
-  const cantidad = Number(document.getElementById("cantidad").value);
-  const cliente = document.getElementById("cliente").value;
-
-  if (cantidad < 1) {
-    resultado.textContent = "Ingrese una cantidad válida";
-    return;
-  }
-
-  try {
-    const res = await fetch("/.netlify/functions/proxy", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ accion: "cargarCreditos", cantidad, cliente })
-    });
-
-    const data = await res.json();
-
-    if (data.success) {
-      resultado.textContent = `Créditos cargados correctamente para ${cliente}!`;
-      console.log("Respuesta del proxy:", data);
-    } else {
-      resultado.textContent = "Error: " + (data.error || "desconocido");
-    }
-
-  } catch (err) {
-    console.error(err);
-    resultado.textContent = "Error de conexión al servidor";
-  }
-});
-
-  </script>
 </body>
 </html>
