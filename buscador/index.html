@@ -1,0 +1,120 @@
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>Buscador de Comercios</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  body { font-family: 'Montserrat', sans-serif; margin:20px; }
+  input, button { padding:10px; margin:5px; }
+  table { border-collapse: collapse; width:100%; margin-top:20px; }
+  th, td { border:1px solid #ccc; padding:8px; text-align:left; }
+  th { background:#eee; }
+  a { color: #1a73e8; text-decoration:none; }
+</style>
+
+</head>
+<body>
+
+<h2>Buscador de Comercios por Rubro</h2>
+
+<label>Rubro:</label><input type="text" id="rubro" placeholder="Ej: Barbería">
+<label>Ciudad:</label><input type="text" id="ciudad" placeholder="Ej: Córdoba">
+<label>País:</label><input type="text" id="pais" placeholder="Ej: Argentina">
+<button onclick="buscarComercios()">Buscar</button>
+<button onclick="nextPage()">+ Resultados</button>
+
+<table>
+  <thead>
+    <tr><th>Nombre</th><th>Dirección</th><th>Teléfono</th></tr>
+  </thead>
+  <tbody id="comerciosTabla"></tbody>
+</table>
+
+<div id="googleMap" style="width:0;height:0;"></div>
+
+<script>
+let map;
+let service;
+let pager = null;
+let resultadosMostrados = 0;
+const maxResultados = 60;
+
+function initMap() {
+  map = new google.maps.Map(document.getElementById('googleMap'), {
+    center: {lat:-34.6037, lng:-58.3816}, // Buenos Aires
+    zoom: 12
+  });
+}
+
+function buscarComercios() {
+  resultadosMostrados = 0;
+  document.getElementById('comerciosTabla').innerHTML = '';
+
+  const rubro = document.getElementById('rubro').value;
+  const ciudad = document.getElementById('ciudad').value;
+  const pais = document.getElementById('pais').value;
+
+  const query = `${rubro} in ${ciudad}, ${pais}`;
+  const request = { query: query, fields: ['name','geometry','formatted_address'] };
+
+  service = new google.maps.places.PlacesService(map);
+  service.textSearch(request, function(results, status, pagination){
+    if(status === google.maps.places.PlacesServiceStatus.OK){
+      pager = pagination;
+      mostrarResultados(results);
+    } else {
+      alert("Error al buscar comercios: " + status);
+    }
+  });
+}
+
+function nextPage() {
+  if(pager && pager.hasNextPage){
+    pager.nextPage();
+  }
+}
+
+function mostrarResultados(results) {
+  const tabla = document.getElementById('comerciosTabla');
+  results.forEach(place => {
+    if(resultadosMostrados >= maxResultados) return;
+
+    resultadosMostrados++;
+    // Celda vacía para teléfono por ahora
+    const row = document.createElement('tr');
+    row.innerHTML = `<td>${place.name}</td><td>${place.formatted_address}</td><td id="phone-${place.place_id}">...</td>`;
+    tabla.appendChild(row);
+
+    // Obtener teléfono
+    const request = { placeId: place.place_id, fields:['formatted_phone_number'] };
+    service.getDetails(request, function(details,status){
+      if(status === google.maps.places.PlacesServiceStatus.OK){
+        const phoneCell = document.getElementById(`phone-${place.place_id}`);
+        if(details.formatted_phone_number){
+          // Redirige a WhatsApp
+          phoneCell.innerHTML = `<a href="https://wa.me/${details.formatted_phone_number.replace(/\D/g,'')}" target="_blank">${details.formatted_phone_number}</a>`;
+        } else {
+          phoneCell.innerText = "No disponible";
+        }
+      }
+    });
+  });
+}
+
+
+</script>
+
+<script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBZ-4Px7hK8O8Br29a3MTFXL41XxsVLLhg&libraries=places&callback=initMap"></script>
+</body>
+</html>
+
+
+   
+
+
+   
+
+
