@@ -1,6 +1,6 @@
 
 export async function handler(event, context) {
-  const GAS_URL = "https://script.google.com/macros/s/AKfycbxVwGP0G9vTRy9WE-Hal_-lBFYP27Q-GtqEUwqaal0vRZD-ENW2fmjz2icH153iT_iF/exec";
+  const GAS_URL = "https://script.google.com/macros/s/AKfycby09ewgKR9BRSP9_3viHcUSMyI1mVRRchbfEnzlH2TvVf4QYEosZCJjv_cdjJx98ycS/exec";
 
   // Manejar preflight OPTIONS
   if (event.httpMethod === "OPTIONS") {
