@@ -93,8 +93,9 @@ loginForm.addEventListener("submit", async (e) => {
       vendedorLogueado = data.vendedores[0];
 
       // Filtramos solo sus plataformas
-      plataformasData = data.plataformas.filter(p => p.VendedorID === vendedorLogueado.ID_Vendedor);
-
+      plataformasData = data.plataformas.filter(p =>
+  String(p.VendedorID).trim() === String(vendedorLogueado.ID_Vendedor).trim()
+        );
       // Mostrar panel
       mensaje.style.color = "green";
       mensaje.textContent = "¡Login exitoso!";
