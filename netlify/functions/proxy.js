@@ -1,7 +1,7 @@
 import fetch from "node-fetch";
 
 export async function handler(event, context) {
-  console.log("Función proxy arrancó");
+  console.log("Función proxy multi-cliente arrancó");
   console.log("Headers recibidos:", event.headers);
   console.log("Body recibido:", event.body);
 
@@ -14,19 +14,32 @@ export async function handler(event, context) {
 
   try {
     // Parsear datos enviados desde el HTML
-    const { accion, cantidad } = JSON.parse(event.body);
+    const { accion, cantidad, cliente } = JSON.parse(event.body);
 
-    if (!accion || !cantidad) {
+    if (!accion || !cantidad || !cliente) {
       return {
         statusCode: 400,
         body: JSON.stringify({ success: false, error: "Faltan parámetros" })
       };
     }
 
-    // URL de tu Apps Script publicado como Web App
-    const url = "https://script.google.com/macros/s/AKfycbynvfWxVLQKACZp5mAaXeE-QXEd-BjTmucmH8zuDU-3rdWKf1wmNNgcJrEm2x8Q3r19/exec";
+    // Map de clientes a sus URLs de Apps Script
+    const urlsAppsScript = {
+      "cliente1": "https://script.google.com/macros/s/AKfycbynvfWxVLQKACZp5mAaXeE-QXEd-BjTmucmH8zuDU-3rdWKf1wmNNgcJrEm2x8Q3r19/exec",
+      "cliente2": "https://script.google.com/macros/s/AKfycbynvfWxVLQKACZp5mAaXeE-QXEd-BjTmucmH8zuDU-3rdWKf1wmNNgcJrEm2x8Q3r19/exec",
+      "cliente3": "https://script.google.com/macros/s/AKfycbynvfWxVLQKACZp5mAaXeE-QXEd-BjTmucmH8zuDU-3rdWKf1wmNNgcJrEm2x8Q3r19/exec"
+      // agregá más clientes aquí
+    };
 
-    // Hacer POST al Apps Script
+    const url = urlsAppsScript[cliente];
+    if (!url) {
+      return {
+        statusCode: 400,
+        body: JSON.stringify({ success: false, error: "Cliente no encontrado" })
+      };
+    }
+
+    // Hacer POST al Apps Script correspondiente
     const response = await fetch(url, {
       method: "POST",
       headers: { "Content-Type": "application/x-www-form-urlencoded" },
@@ -37,7 +50,7 @@ export async function handler(event, context) {
 
     return {
       statusCode: 200,
-      body: JSON.stringify({ success: true, data })
+      body: JSON.stringify({ success: true, cliente, data })
     };
 
   } catch (error) {
@@ -48,3 +61,5 @@ export async function handler(event, context) {
     };
   }
 }
+
+
