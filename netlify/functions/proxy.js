@@ -2,7 +2,7 @@
 
 const VENDORS_URL =
   process.env.VENDORS_URL ||
-  "https://script.google.com/macros/s/AKfycbyEC6BKwjJzptuvMj3KxGHF_m40xh0NhsoBz1Lzpe8ZXo5KzQtIPi5YNCndIYr5A5Ze/exec";
+  "https://script.google.com/macros/s/AKfycbyYx9AJZ918bke7QZJbsuilUMxBC6HHVvjPmmk3UyT1RL8zz7ofK-0iIMeXTuaogmK7/exec";
 
 // Map de clientes -> URL de su Apps Script (esto NO va en el HTML)
 const CLIENT_SCRIPTS = {
