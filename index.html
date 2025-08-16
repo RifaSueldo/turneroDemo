@@ -6,6 +6,115 @@
   <title>TurnoX - Cargar Créditos</title>
 
   <style>
+/* Reset básico */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+}
+
+/* Fondo general */
+body {
+  background: #f4f6f9;
+  color: #333;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  min-height: 100vh;
+  padding: 20px;
+}
+
+/* Contenedor principal */
+.panel {
+  background: #fff;
+  width: 100%;
+  max-width: 500px;
+  border-radius: 16px;
+  box-shadow: 0 8px 18px rgba(0,0,0,0.1);
+  padding: 25px 30px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+/* Título */
+.panel h1 {
+  font-size: 1.6rem;
+  font-weight: 700;
+  color: #2a3d66;
+  margin-bottom: 10px;
+  text-align: center;
+}
+
+/* Labels y selects */
+label {
+  font-weight: 600;
+  margin-bottom: 6px;
+  display: block;
+  color: #444;
+}
+
+select, input[type="number"] {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid #ddd;
+  border-radius: 10px;
+  font-size: 1rem;
+  transition: border 0.2s;
+}
+
+select:focus, input[type="number"]:focus {
+  outline: none;
+  border-color: #4f7cff;
+  box-shadow: 0 0 0 3px rgba(79,124,255,0.2);
+}
+
+/* Botón */
+button {
+  background: linear-gradient(135deg, #4f7cff, #3a5ed0);
+  color: white;
+  border: none;
+  padding: 12px;
+  font-size: 1rem;
+  font-weight: 600;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: transform 0.15s ease, background 0.3s ease;
+}
+
+button:hover {
+  transform: scale(1.03);
+  background: linear-gradient(135deg, #3a5ed0, #2e4bb3);
+}
+
+/* Resultado / mensajes */
+#resultado {
+  padding: 12px;
+  border-radius: 10px;
+  text-align: center;
+  font-weight: 600;
+}
+
+#resultado.success {
+  background: #e2f9e5;
+  color: #2d8a4d;
+}
+
+#resultado.error {
+  background: #fde2e2;
+  color: #b52323;
+}
+
+/* Responsive */
+@media (max-width: 600px) {
+  .panel {
+    padding: 20px;
+  }
+  .panel h1 {
+    font-size: 1.4rem;
+  }
+}
 
 </style>
 
