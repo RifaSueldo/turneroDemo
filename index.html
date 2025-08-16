@@ -2,28 +2,34 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8">
-<title>Panel de Vendedor</title>
+<title>TurnoX Panel Vendedor</title>
 <style>
-  body { font-family: Arial, sans-serif; margin: 20px; }
-  #panel { display: none; }
-  table { border-collapse: collapse; width: 100%; margin-top: 10px; }
-  th, td { border: 1px solid #ccc; padding: 8px; text-align: left; }
-  input[type="number"] { width: 80px; }
-  button { padding: 5px 10px; }
+body { font-family: Arial, sans-serif; padding: 2rem; background: #f0f0f0; }
+form, .panel { background: #fff; padding: 2rem; border-radius: 8px; max-width: 900px; margin: 1rem auto; }
+input { padding: 0.5rem; margin-bottom: 1rem; width: 100%; }
+button { padding: 0.5rem 1rem; }
+table { width: 100%; border-collapse: collapse; margin-top: 1rem; }
+th, td { border: 1px solid #ccc; padding: 0.5rem; text-align: center; }
+th { background: #eee; }
+.hidden { display: none; }
 </style>
 </head>
 <body>
 
-<h2>Login de Vendedor</h2>
-<div id="login">
-  Usuario: <input type="text" id="usuario"><br><br>
-  Clave: <input type="password" id="clave"><br><br>
-  <button onclick="login()">Ingresar</button>
-</div>
+<h1 style="text-align:center;">TurnoX Panel</h1>
 
-<div id="panel">
-  <h2>Datos del Vendedor</h2>
-  <table id="vendedorTable">
+<!-- Login -->
+<form id="loginForm">
+  <input type="text" id="usuario" placeholder="Usuario" required />
+  <input type="password" id="clave" placeholder="Clave" required />
+  <button type="submit">Iniciar sesión</button>
+  <div id="mensaje"></div>
+</form>
+
+<!-- Panel -->
+<div class="panel hidden" id="panel">
+  <h2>Mis Datos</h2>
+  <table id="tablaVendedores">
     <thead>
       <tr>
         <th>ID</th>
@@ -36,17 +42,16 @@
     <tbody></tbody>
   </table>
 
-  <h2>Plataformas Asignadas</h2>
-  <table id="plataformasTable">
+  <h2>Mis Plataformas</h2>
+  <table id="tablaPlataformas">
     <thead>
       <tr>
         <th>FechaHora</th>
         <th>Nombre</th>
         <th>Usuario</th>
         <th>Clave</th>
-        <th>Créditos</th>
         <th>Agregar Créditos</th>
-        <th>Acción</th>
+        <th>Guardar</th>
       </tr>
     </thead>
     <tbody></tbody>
@@ -54,101 +59,123 @@
 </div>
 
 <script>
+const loginForm = document.getElementById("loginForm");
+const mensaje = document.getElementById("mensaje");
+const panel = document.getElementById("panel");
+
+const tablaVendedores = document.getElementById("tablaVendedores").querySelector("tbody");
+const tablaPlataformas = document.getElementById("tablaPlataformas").querySelector("tbody");
+
 let vendedorLogueado = null;
 let plataformasData = [];
 
-const API_URL = "https://script.google.com/macros/s/AKfycbyM6bSk_XEAhKxHIRCrSYOrdYg0lY4yvWC8d4qe_orpA2yCvPD4M4SSD5gu5yafjDio/exec"; // reemplaza con tu URL
+loginForm.addEventListener("submit", async (e) => {
+  e.preventDefault();
+  mensaje.textContent = "Validando...";
 
-function login() {
   const usuario = document.getElementById("usuario").value.trim();
   const clave = document.getElementById("clave").value.trim();
 
-  fetch(API_URL, {
-    method: "POST",
-    body: JSON.stringify({ usuario, clave }),
-    headers: { "Content-Type": "application/json" }
-  })
-  .then(res => res.json())
-  .then(data => {
-    if(!data.success) { alert(data.message); return; }
+  try {
+    const res = await fetch("/.netlify/functions/proxy", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ usuario, clave })
+    });
 
-    // Encontrar vendedor logueado
-    vendedorLogueado = data.vendedores.find(v => v.ID_Vendedor && v.ID_Vendedor === data.vendedores[0].ID_Vendedor);
-    
-    // Filtrar solo sus plataformas
-    plataformasData = data.plataformas.filter(p =>
-      String(p.VendedorID).trim() === String(vendedorLogueado.ID_Vendedor).trim()
-    );
+    const data = await res.json();
 
-    document.getElementById("login").style.display = "none";
-    document.getElementById("panel").style.display = "block";
+    if (data.success) {
+      // Login exitoso y filtrado
+      vendedorLogueado = data.vendedores[0];
 
-    renderVendedor();
-    renderPlataformas();
-  })
-  .catch(err => alert("Error de conexión: " + err));
-}
+      // Filtramos solo sus plataformas
+      plataformasData = data.plataformas
+        .filter(p => String(p.VendedorID).trim() === String(vendedorLogueado.ID_Vendedor).trim())
+        // Agregar URL de App Script correspondiente a cada plataforma
+        .map(p => ({ ...p, url: p.URL || "PONER_AQUI_LA_URL_DE_CADA_PLATAFORMA" }));
+
+      mensaje.style.color = "green";
+      mensaje.textContent = "¡Login exitoso!";
+      loginForm.classList.add("hidden");
+      panel.classList.remove("hidden");
+
+      renderVendedor();
+      renderPlataformas();
+    } else {
+      mensaje.style.color = "red";
+      mensaje.textContent = data.message || "Usuario o clave incorrectos";
+    }
+  } catch (err) {
+    mensaje.style.color = "red";
+    mensaje.textContent = "Error de conexión: " + err.message;
+  }
+});
 
 function renderVendedor() {
-  const tbody = document.querySelector("#vendedorTable tbody");
-  tbody.innerHTML = "";
-  if(!vendedorLogueado) return;
-  const row = `<tr>
-    <td>${vendedorLogueado.ID_Vendedor}</td>
-    <td>${vendedorLogueado.Nombre}</td>
-    <td>${vendedorLogueado.Creditos_Asignados}</td>
-    <td>${vendedorLogueado.Creditos_Usados}</td>
-    <td>${vendedorLogueado.Creditos_Disponibles}</td>
-  </tr>`;
-  tbody.innerHTML = row;
+  tablaVendedores.innerHTML = "";
+  const v = vendedorLogueado;
+  const tr = document.createElement("tr");
+  tr.innerHTML = `
+    <td>${v.ID_Vendedor}</td>
+    <td>${v.Nombre}</td>
+    <td>${v.Creditos_Asignados}</td>
+    <td>${v.Creditos_Usados}</td>
+    <td>${v.Creditos_Disponibles}</td>
+  `;
+  tablaVendedores.appendChild(tr);
 }
 
 function renderPlataformas() {
-  const tbody = document.querySelector("#plataformasTable tbody");
-  tbody.innerHTML = "";
+  tablaPlataformas.innerHTML = "";
   plataformasData.forEach((p, i) => {
-    tbody.innerHTML += `<tr>
+    const tr = document.createElement("tr");
+    tr.innerHTML = `
       <td>${p.FechaHora}</td>
       <td>${p.Nombre}</td>
-      <td>${p.usuario}</td>
-      <td>${p.clave}</td>
-      <td>${p.creditos}</td>
-      <td><input type="number" id="cred${i}" min="1" value="0"></td>
-      <td><button onclick="agregarCreditos(${i})">Agregar</button></td>
-    </tr>`;
+      <td><input type="text" value="${p.usuario}" data-index="${i}" /></td>
+      <td><input type="text" value="${p.clave}" data-index="${i}" /></td>
+      <td><input type="number" min="0" placeholder="Agregar" data-index="${i}" /></td>
+      <td><button onclick="guardarCredito(${i})">Guardar</button></td>
+    `;
+    tablaPlataformas.appendChild(tr);
   });
 }
 
-function agregarCreditos(index) {
-  const input = document.getElementById(`cred${index}`);
-  const creditos = Number(input.value);
-  if(creditos <= 0) { alert("Ingrese un número válido"); return; }
+// Funcionalidad de agregar créditos
+window.guardarCredito = async function(i) {
+  const input = tablaPlataformas.querySelectorAll("input[type=number]")[i];
+  const suma = Number(input.value);
+  if (!suma || suma <= 0) {
+    alert("Ingresa un valor válido para agregar créditos");
+    return;
+  }
 
-  const plataforma = plataformasData[index];
+  const plataforma = plataformasData[i];
+  if (!plataforma.url) {
+    alert("No hay URL definida para esta plataforma");
+    return;
+  }
 
-  fetch(API_URL, {
-    method: "POST",
-    body: JSON.stringify({
-      usuario: document.getElementById("usuario").value.trim(),
-      clave: document.getElementById("clave").value.trim(),
-      creditosAgregar: creditos,
-      plataformaURL: plataforma.plataformaURL
-    }),
-    headers: { "Content-Type": "application/json" }
-  })
-  .then(res => res.json())
-  .then(data => {
-    if(!data.success) { alert(data.message); return; }
-    alert(data.message);
-    input.value = 0;
-    login(); // refresca datos del vendedor y plataformas
-  })
-  .catch(err => alert("Error al agregar créditos: " + err));
-}
+  const payload = {
+    usuario: plataforma.usuario,
+    creditos: suma
+  };
+
+  try {
+    const res = await fetch(plataforma.url, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload)
+    });
+
+    const data = await res.json(); // Asegurarse que App Script devuelva JSON
+    alert("Créditos agregados correctamente");
+    input.value = "";
+  } catch (err) {
+    alert("Error al agregar créditos: " + err.message);
+  }
+};
 </script>
-
 </body>
 </html>
-
-
-
