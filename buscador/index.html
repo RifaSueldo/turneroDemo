@@ -90,6 +90,24 @@
   th, td { border:1px solid #ccc; padding:8px; text-align:left; font-family: "Montserrat", sans-serif;}
   th { background:#eee; }
   a { color: #1a73e8; text-decoration:none;font-family: "Montserrat", sans-serif; }
+
+  .btn{
+    font-family:"Montserrat",sans-serif;
+    background:#533482;
+    color:#fff;
+    border:0;
+    padding:10px 16px;
+    border-radius:8px;
+    font-weight:700;
+    cursor:pointer;
+    display:inline-block;
+    text-decoration:none;
+    text-align: center;
+    box-shadow:0 3px 10px rgba(83,52,130,.25);
+    transition:transform .15s ease, box-shadow .2s ease, background .2s ease;
+  }
+  .btn:hover{ background:#6B6870; transform:translateY(-1px); box-shadow:0 6px 14px rgba(83,52,130,.35); }
+  .btn:active{ transform:translateY(0); box-shadow:0 2px 6px rgba(0,0,0,.2); }
 </style>
 </head>
 <body>
@@ -105,7 +123,7 @@
   
 </header>
 <h2>Buscador de Comercios por Rubro</h2>
-
+<a class="btn" href="https://creditos.turnox.pro/">VOLVER</a>
 <label></label><input type="text" id="rubro" placeholder="Rubro Ej: Barbería">
 <label></label><input type="text" id="ciudad" placeholder="Ciudad Ej: Córdoba">
 <label></label><input type="text" id="pais" placeholder="país Ej: Argentina">
