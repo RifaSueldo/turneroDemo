@@ -1,4 +1,7 @@
-
+export async function handler(event, context) {
+  console.log("Headers recibidos:", event.headers);
+  console.log("Body recibido:", event.body);
+  console.log("Process.env.APP_SECRET:", process.env.APP_SECRET);
 import fetch from "node-fetch";
 
 export async function handler(event, context) {
