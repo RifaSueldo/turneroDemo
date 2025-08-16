@@ -2,56 +2,52 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8">
-  <title>Cargar Créditos</title>
-  <style>
-    body { font-family: Arial, sans-serif; margin: 40px; background: #f2f2f2; }
-    .panel { background: #fff; padding: 20px; border-radius: 8px; width: 300px; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
-    input { width: 100%; padding: 8px; margin: 8px 0; box-sizing: border-box; }
-    button { width: 100%; padding: 10px; background: #28a745; color: white; border: none; border-radius: 4px; cursor: pointer; }
-    button:hover { background: #218838; }
-    .mensaje { margin-top: 10px; }
-  </style>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TurnoX - Cargar Créditos</title>
 </head>
 <body>
+  <h1>TurnoX - Cargar Créditos</h1>
 
-<div class="panel">
-  <h2>Cargar Créditos (Fila 2)</h2>
-  <input type="number" id="creditos" placeholder="Cantidad de créditos">
-  <button onclick="cargarCreditos()">Cargar Créditos</button>
-  <div class="mensaje" id="mensaje"></div>
-</div>
+  <label for="cantidad">Cantidad de créditos:</label>
+  <input type="number" id="cantidad" value="1" min="1">
 
-<script>
-async function cargarCreditos() {
-  const creditos = Number(document.getElementById("creditos").value);
+  <button id="cargarBtn">Cargar Créditos</button>
 
-  if (isNaN(creditos) || creditos <= 0) {
-    document.getElementById("mensaje").textContent = "Ingrese una cantidad válida de créditos.";
-    return;
-  }
+  <p id="resultado"></p>
 
-  try {
-    const res = await fetch("/.netlify/functions/proxy", {
-      method: "POST",
-      headers: { 
-        "Content-Type": "application/json",
-        "x-app-secret": "mi_super_secreto" // debe coincidir con netlify.toml
-      },
-      body: JSON.stringify({ accion: "cargarCreditos", cantidad: creditos })
+  <script>
+    const btn = document.getElementById("cargarBtn");
+    const input = document.getElementById("cantidad");
+    const resultado = document.getElementById("resultado");
+
+    btn.addEventListener("click", async () => {
+      const creditos = Number(input.value);
+      if (creditos < 1) {
+        resultado.textContent = "Ingrese una cantidad válida";
+        return;
+      }
+
+      try {
+        const res = await fetch("/.netlify/functions/proxy", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ accion: "cargarCreditos", cantidad: creditos })
+        });
+
+        const data = await res.json();
+
+        if (data.success) {
+          resultado.textContent = "Créditos cargados correctamente!";
+          console.log("Respuesta del proxy:", data);
+        } else {
+          resultado.textContent = "Error: " + (data.error || "desconocido");
+        }
+
+      } catch (err) {
+        console.error(err);
+        resultado.textContent = "Error de conexión al servidor";
+      }
     });
-
-    const data = await res.json();
-
-    if (data.success) {
-      document.getElementById("mensaje").textContent = `Créditos actualizados: ${data.creditosActuales}`;
-    } else {
-      document.getElementById("mensaje").textContent = `Error: ${data.error}`;
-    }
-  } catch (error) {
-    document.getElementById("mensaje").textContent = `Error de conexión: ${error}`;
-  }
-}
-</script>
-
+  </script>
 </body>
 </html>
