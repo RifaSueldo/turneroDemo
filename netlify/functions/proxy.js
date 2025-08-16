@@ -9,12 +9,7 @@ export async function handler(event, context) {
     return { statusCode: 405, body: JSON.stringify({ success: false, error: "Method Not Allowed" }) };
   }
 
-  try {
-    // Validar clave secreta
-    const secret = event.headers["x-app-secret"];
-    if (secret !== process.env.APP_SECRET) {
-      return { statusCode: 403, body: JSON.stringify({ success: false, error: "Forbidden: clave incorrecta" }) };
-    }
+  
 
     // Parsear datos enviados desde el panel HTML
     const { accion, cantidad } = JSON.parse(event.body);
