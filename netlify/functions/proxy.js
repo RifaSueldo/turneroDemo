@@ -1,26 +1,26 @@
+import fetch from "node-fetch";
+
 export async function handler(event, context) {
   console.log("Headers recibidos:", event.headers);
   console.log("Body recibido:", event.body);
   console.log("Process.env.APP_SECRET:", process.env.APP_SECRET);
-import fetch from "node-fetch";
 
-export async function handler(event, context) {
   if (event.httpMethod !== "POST") {
-    return { statusCode: 405, body: "Method Not Allowed" };
+    return { statusCode: 405, body: JSON.stringify({ success: false, error: "Method Not Allowed" }) };
   }
 
   try {
     // Validar clave secreta
     const secret = event.headers["x-app-secret"];
     if (secret !== process.env.APP_SECRET) {
-      return { statusCode: 403, body: "Forbidden" };
+      return { statusCode: 403, body: JSON.stringify({ success: false, error: "Forbidden: clave incorrecta" }) };
     }
 
     // Parsear datos enviados desde el panel HTML
     const { accion, cantidad } = JSON.parse(event.body);
 
     if (!accion || !cantidad) {
-      return { statusCode: 400, body: "Faltan parámetros" };
+      return { statusCode: 400, body: JSON.stringify({ success: false, error: "Faltan parámetros" }) };
     }
 
     // URL de tu Apps Script publicado como Web App
@@ -36,7 +36,9 @@ export async function handler(event, context) {
     const data = await response.json();
 
     return { statusCode: 200, body: JSON.stringify(data) };
+
   } catch (error) {
-    return { statusCode: 500, body: error.toString() };
+    console.error("Error en proxy:", error);
+    return { statusCode: 500, body: JSON.stringify({ success: false, error: error.toString() }) };
   }
 }
