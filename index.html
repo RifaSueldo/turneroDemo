@@ -98,10 +98,128 @@
       <p style="text-align:center; margin:0px; font-size: 10px;">Tu Logo | Tus Colores</p>
     </div>
     <div class="navbar-action">
-      <button class="btn-redireccion" onclick="window.location.href='panel/'">
-        Acceso
-      </button>
+      <!-- Login -->
+  <label>Usuario</label>
+  <input type="text" id="usuario" autocomplete="username">
+  <label>Clave</label>
+  <input type="password" id="clave" autocomplete="current-password">
+  <button id="btnLogin">Ingresar y ver saldo</button>
     </div>
   </header>
-</body>
+
+  <div class="creditos-panel">
+  <h3>Panel de Créditos</h3>
+
+  <!-- Login -->
+  <label>Usuario</label>
+  <input type="text" id="usuario" autocomplete="username">
+  <label>Clave</label>
+  <input type="password" id="clave" autocomplete="current-password">
+  <button id="btnLogin">Ingresar y ver saldo</button>
+
+  <hr style="margin:14px 0; opacity:.3">
+
+  <!-- Saldo del vendedor -->
+  <label>Saldo disponible</label>
+  <input type="number" id="saldo" value="0" readonly>
+
+  <!-- Asignación a cliente -->
+  <label>Cliente</label>
+  <select id="cliente">
+    <option value="cliente1">Cliente 1</option>
+    <option value="cliente2">Cliente 2</option>
+    <option value="cliente3">Cliente 3</option>
+  </select>
+
+  <label>Cantidad a cargar</label>
+  <input type="number" id="cantidad" value="10" min="1">
+
+  <button id="cargarBtn">Cargar Créditos</button>
+
+  <div id="resultado"></div>
+</div>
+
+<script>
+  const usuarioInput = document.getElementById("usuario");
+  const claveInput   = document.getElementById("clave");
+  const saldoInput   = document.getElementById("saldo");
+  const clienteSel   = document.getElementById("cliente");
+  const cantidadInp  = document.getElementById("cantidad");
+  const btnLogin     = document.getElementById("btnLogin");
+  const btnCargar    = document.getElementById("cargarBtn");
+  const resultado    = document.getElementById("resultado");
+
+  btnLogin.addEventListener("click", async () => {
+    resultado.textContent = "";
+    try {
+      const res = await fetch("/.netlify/functions/proxy", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          accion: "obtenerSaldo",
+          usuario: usuarioInput.value.trim(),
+          clave:   claveInput.value.trim()
+        })
+      });
+      const data = await res.json();
+      if (data.success) {
+        saldoInput.value = data.saldo;
+        resultado.textContent = `Bienvenido ${data.vendedor}. Saldo: ${data.saldo}`;
+        resultado.className = "success";
+      } else {
+        resultado.textContent = data.error || "Login inválido";
+        resultado.className = "error";
+      }
+    } catch (e) {
+      resultado.textContent = "Error de conexión";
+      resultado.className = "error";
+      console.error(e);
+    }
+  });
+
+  btnCargar.addEventListener("click", async () => {
+    resultado.textContent = "";
+    const cant = Number(cantidadInp.value || 0);
+    if (cant <= 0) {
+      resultado.textContent = "Cantidad inválida";
+      resultado.className = "error";
+      return;
+    }
+
+    // Validación local de saldo (extra, el real se valida en el servidor)
+    if (cant > Number(saldoInput.value || 0)) {
+      resultado.textContent = "Saldo insuficiente. Recargá créditos.";
+      resultado.className = "error";
+      return;
+    }
+
+    try {
+      const res = await fetch("/.netlify/functions/proxy", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          accion:  "cargarCreditos",
+          usuario: usuarioInput.value.trim(),
+          clave:   claveInput.value.trim(),
+          cliente: clienteSel.value,
+          cantidad: cant
+        })
+      });
+      const data = await res.json();
+      if (data.success) {
+        saldoInput.value = data.nuevoSaldo ?? saldoInput.value;
+        resultado.textContent = `Créditos cargados a ${data.cliente}. Saldo restante: ${saldoInput.value}`;
+        resultado.className = "success";
+      } else {
+        resultado.textContent = data.error || "No se pudo cargar";
+        resultado.className = "error";
+      }
+    } catch (e) {
+      resultado.textContent = "Error de conexión";
+      resultado.className = "error";
+      console.error(e);
+    }
+  });
+</script>
+
 </html>
