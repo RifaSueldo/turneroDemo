@@ -4,6 +4,114 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>TurnoX - Cargar Créditos</title>
+
+  <style>
+/* Contenedor general del panel de créditos */
+.creditos-panel {
+  background: 
+        linear-gradient(
+            135deg,
+            #d0d0d0 0%, 
+            #f0f0f0 25%, 
+            #c0c0c0 50%, 
+            #e0e0e0 75%, 
+            #d0d0d0 100%
+        ),
+        repeating-linear-gradient(
+            0deg,
+            rgba(255,255,255,0.05) 0px,
+            rgba(255,255,255,0.05) 2px,
+            transparent 2px,
+            transparent 4px
+        );
+  background-blend-mode: overlay;
+  max-width: 340px;
+  margin: 20px auto;
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 0 10px rgba(0,0,0,0.08);
+}
+
+/* Títulos y labels */
+.creditos-panel h3 {
+  margin-bottom: 15px;
+  color: #533482;
+  font-size: 1.3em;
+  text-align: center;
+}
+
+.creditos-panel label {
+  display: block;
+  margin-bottom: 6px;
+  font-weight: 500;
+  color: #533482;
+}
+
+/* Inputs y select */
+.creditos-panel input[type="number"],
+.creditos-panel select {
+  width: 100%;
+  padding: 10px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  margin-bottom: 12px;
+  font-size: 14px;
+  font-family: "Montserrat", sans-serif;
+  box-sizing: border-box;
+  transition: border-color 0.2s;
+}
+
+.creditos-panel input[type="number"]:focus,
+.creditos-panel select:focus {
+  border-color: #533482;
+  outline: none;
+}
+
+/* Botón principal */
+.creditos-panel button {
+  background: #533482;
+  color: white;
+  border: none;
+  padding: 12px;
+  width: 100%;
+  border-radius: 6px;
+  font-size: 16px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background 0.3s, transform 0.2s, box-shadow 0.2s;
+}
+
+.creditos-panel button:hover {
+  background: #6B6870;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+}
+
+/* Mensaje de resultado */
+#resultado {
+  margin-top: 12px;
+  text-align: center;
+  font-weight: 500;
+  color: #533482;
+  min-height: 20px;
+}
+
+/* Select y input en móviles */
+@media (max-width: 480px) {
+  .creditos-panel {
+    max-width: 90%;
+    padding: 15px;
+  }
+
+  .creditos-panel button {
+    font-size: 15px;
+    padding: 10px;
+  }
+}
+
+</style>
+
+  
 </head>
 <body>
   <label for="cliente">Seleccionar cliente:</label>
