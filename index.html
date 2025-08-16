@@ -253,15 +253,12 @@
         })
       });
       const data = await res.json();
-      if (data.success) {
-    saldoInput.value = data.saldo;
-    resultado.textContent = `Bienvenido ${data.vendedor}. Saldo: ${data.saldo}`;
-    resultado.className = "success";
-
-    // Mostrar panel de créditos con fade-in
-    const panel = document.querySelector(".creditos-panel");
-    panel.classList.add("visible");
-}
+     if (data.success) {
+        saldoInput.value = data.saldo;
+        resultado.textContent = `Bienvenido ${data.vendedor}. Saldo: ${data.saldo}`;
+        resultado.className = "success";
+        // Mostrar panel de créditos
+    document.querySelector(".creditos-panel").style.display = "flex";
       } else {
         resultado.textContent = data.error || "Login inválido";
         resultado.className = "error";
