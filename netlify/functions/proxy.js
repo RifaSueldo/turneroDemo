@@ -1,3 +1,37 @@
+export async function handler(event, context) {
+  const { path } = event.queryStringParameters || {};
+  const { usuario, clave, cantidad } = JSON.parse(event.body || "{}");
+
+  // URL de TU hoja de vendedores
+  const API_URL = "https://script.google.com/macros/s/TU_ID/exec";
+
+  let url = API_URL + "?action=" + path;
+
+  if (path === "obtenerSaldo") {
+    url += "&usuario=" + usuario + "&clave=" + clave;
+  }
+
+  if (path === "descontarSaldo") {
+    url += "&usuario=" + usuario + "&clave=" + clave + "&cantidad=" + cantidad;
+  }
+
+  try {
+    const response = await fetch(url);
+    const data = await response.json();
+    return {
+      statusCode: 200,
+      body: JSON.stringify(data),
+    };
+  } catch (err) {
+    return {
+      statusCode: 500,
+      body: JSON.stringify({ error: err.message }),
+    };
+  }
+}
+
+
+
 import fetch from "node-fetch";
 
 export async function handler(event, context) {
