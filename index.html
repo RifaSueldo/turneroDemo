@@ -1,1 +1,62 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Panel de Créditos</title>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 40px; background: #f2f2f2; }
+    .panel { background: #fff; padding: 20px; border-radius: 8px; width: 300px; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
+    input { width: 100%; padding: 8px; margin: 8px 0; box-sizing: border-box; }
+    button { width: 100%; padding: 10px; background: #007bff; color: white; border: none; border-radius: 4px; cursor: pointer; }
+    button:hover { background: #0056b3; }
+    .mensaje { margin-top: 10px; }
+  </style>
+</head>
+<body>
+
+<div class="panel">
+  <h2>Agregar Créditos</h2>
+  <input type="text" id="usuario" placeholder="Usuario">
+  <input type="number" id="creditos" placeholder="Cantidad de créditos">
+  <button onclick="agregarCreditos()">Agregar Créditos</button>
+  <div class="mensaje" id="mensaje"></div>
+</div>
+
+<script>
+async function agregarCreditos() {
+  const usuario = document.getElementById("usuario").value.trim();
+  const creditosAgregar = Number(document.getElementById("creditos").value);
+
+  if (!usuario || isNaN(creditosAgregar) || creditosAgregar <= 0) {
+    document.getElementById("mensaje").textContent = "Por favor completa los datos correctamente.";
+    return;
+  }
+
+  try {
+    const res = await fetch("/.netlify/functions/proxy", {
+      method: "POST",
+      headers: { 
+        "Content-Type": "application/json",
+        "x-app-secret": "mi_super_secreto" // debe coincidir con tu netlify.toml
+      },
+      body: JSON.stringify({ usuario, creditosAgregar })
+    });
+
+    const data = await res.json();
+
+    if (data.data && data.data.creditos !== undefined) {
+      document.getElementById("mensaje").textContent = `Créditos actualizados: ${data.data.creditos} (Usuario: ${data.data.usuario})`;
+    } else if (data.error) {
+      document.getElementById("mensaje").textContent = `Error: ${data.error}`;
+    } else {
+      document.getElementById("mensaje").textContent = "Hubo un error al actualizar créditos.";
+    }
+  } catch (error) {
+    document.getElementById("mensaje").textContent = `Error de conexión: ${error}`;
+  }
+}
+</script>
+
+</body>
+</html>
 
