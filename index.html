@@ -86,15 +86,13 @@ loginForm.addEventListener("submit", async (e) => {
     const data = await res.json();
 
     if (data.success) {
-      // Tomamos el primer vendedor devuelto, que corresponde al que se logueó
-      vendedorLogueado = data.vendedores[0];
+      vendedorLogueado = data.vendedores.find(v => v.Usuario === usuario) || data.vendedores[0];
 
       // Filtramos solo sus plataformas
       plataformasData = data.plataformas.filter(p =>
         String(p.VendedorID).trim() === String(vendedorLogueado.ID_Vendedor).trim()
       );
 
-      // Mostrar panel
       mensaje.style.color = "green";
       mensaje.textContent = "¡Login exitoso!";
       loginForm.classList.add("hidden");
@@ -152,6 +150,7 @@ window.guardarCredito = async function(i) {
   }
 
   const plataforma = plataformasData[i];
+
   if (creditosAgregar > vendedorLogueado.Creditos_Disponibles) {
     alert("No hay créditos suficientes disponibles.");
     return;
@@ -159,11 +158,12 @@ window.guardarCredito = async function(i) {
 
   try {
     // Llamada a la URL de la plataforma (App Script)
-    const res = await fetch(plataforma.URL, { // asumimos que cada plataformaData tiene campo URL
+    const res = await fetch(plataforma.URL, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ creditos: creditosAgregar })
     });
+
     const result = await res.json();
 
     if (result.success) {
