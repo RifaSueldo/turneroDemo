@@ -181,7 +181,15 @@
     .navbar-action button { font-size: 14px; padding: 8px; }
   }
   .creditos-panel {
-  display: none; /* Oculto hasta login */
+  display: none;        /* Oculto hasta login */
+  opacity: 0;           /* Transparente */
+  flex-direction: column;
+  gap: 10px;
+  transition: opacity 0.5s ease; /* transición suave */
+}
+.creditos-panel.visible {
+  display: flex;        /* Lo mostramos como flex */
+  opacity: 1;           /* Totalmente visible */
 }
 </style>
 </head>
@@ -246,11 +254,14 @@
       });
       const data = await res.json();
       if (data.success) {
-        saldoInput.value = data.saldo;
-        resultado.textContent = `Bienvenido ${data.vendedor}. Saldo: ${data.saldo}`;
-        resultado.className = "success";
-        // Mostrar panel de créditos
-    document.querySelector(".creditos-panel").style.display = "flex";
+    saldoInput.value = data.saldo;
+    resultado.textContent = `Bienvenido ${data.vendedor}. Saldo: ${data.saldo}`;
+    resultado.className = "success";
+
+    // Mostrar panel de créditos con fade-in
+    const panel = document.querySelector(".creditos-panel");
+    panel.classList.add("visible");
+}
       } else {
         resultado.textContent = data.error || "Login inválido";
         resultado.className = "error";
