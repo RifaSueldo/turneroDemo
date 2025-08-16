@@ -1,3 +1,2 @@
 [build.environment]
-APP_SECRET = "mi_super_secreto"
-
+VENDORS_URL = "https://script.google.com/macros/s/AKfycbyEC6BKwjJzptuvMj3KxGHF_m40xh0NhsoBz1Lzpe8ZXo5KzQtIPi5YNCndIYr5A5Ze/exec"
