@@ -24,7 +24,7 @@ export async function handler(event, context) {
     }
 
     // URL de tu Apps Script publicado como Web App
-    const url = "https://script.google.com/macros/s/TU_ID_DEL_SCRIPT/exec";
+    const url = "https://script.google.com/macros/s/AKfycbyaQnCEu90y44K20z2KOX9plLqngZ0ubScN9MKF2wnoMyuO8JNe3xyXb4gVBTrhuO31/exec";
 
     // Hacer POST al Apps Script
     const response = await fetch(url, {
