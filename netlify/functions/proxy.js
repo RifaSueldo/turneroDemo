@@ -7,7 +7,7 @@ const VENDORS_URL =
 // Map de clientes -> URL de su Apps Script (esto NO va en el HTML)
 const CLIENT_SCRIPTS = {
   cliente1: "https://script.google.com/macros/s/AKfycbynvfWxVLQKACZp5mAaXeE-QXEd-BjTmucmH8zuDU-3rdWKf1wmNNgcJrEm2x8Q3r19/exec",
-  cliente2: "https://script.google.com/macros/s/AKfycbynvfWxVLQKACZp5mAaXeE-QXEd-BjTmucmH8zuDU-3rdWKf1wmNNgcJrEm2x8Q3r19/exec",
+  EmilianoEA: "https://script.google.com/macros/s/AKfycbznPQ29QBLxkFnbf396OfpdqcbZ-QBsbZ8CWw8BMMPopnXHHcxoPDAYkA6HSP1yt_uAcg/exec",
   cliente3: "https://script.google.com/macros/s/AKfycbynvfWxVLQKACZp5mAaXeE-QXEd-BjTmucmH8zuDU-3rdWKf1wmNNgcJrEm2x8Q3r19/exec",
 };
 
