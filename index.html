@@ -180,6 +180,9 @@
     .navbar { flex-direction: column; gap: 10px; padding: 15px; }
     .navbar-action button { font-size: 14px; padding: 8px; }
   }
+  .creditos-panel {
+  display: none; /* Oculto hasta login */
+}
 </style>
 </head>
 
@@ -246,6 +249,8 @@
         saldoInput.value = data.saldo;
         resultado.textContent = `Bienvenido ${data.vendedor}. Saldo: ${data.saldo}`;
         resultado.className = "success";
+        // Mostrar panel de créditos
+    document.querySelector(".creditos-panel").style.display = "flex";
       } else {
         resultado.textContent = data.error || "Login inválido";
         resultado.className = "error";
