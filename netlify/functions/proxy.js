@@ -1,99 +1,98 @@
-export async function handler(event, context) {
-  const { path } = event.queryStringParameters || {};
-  const { usuario, clave, cantidad } = JSON.parse(event.body || "{}");
+// Node 18+ en Netlify ya trae fetch global; no importes node-fetch.
 
-  // URL de TU hoja de vendedores
-  const API_URL = "https://script.google.com/macros/s/TU_ID/exec";
+const VENDORS_URL =
+  process.env.VENDORS_URL ||
+  "https://script.google.com/macros/s/AKfycbyEC6BKwjJzptuvMj3KxGHF_m40xh0NhsoBz1Lzpe8ZXo5KzQtIPi5YNCndIYr5A5Ze/exec";
 
-  let url = API_URL + "?action=" + path;
+// Map de clientes -> URL de su Apps Script (esto NO va en el HTML)
+const CLIENT_SCRIPTS = {
+  cliente1: "https://script.google.com/macros/s/AKfycbynvfWxVLQKACZp5mAaXeE-QXEd-BjTmucmH8zuDU-3rdWKf1wmNNgcJrEm2x8Q3r19/exec",
+  cliente2: "https://script.google.com/macros/s/AKfycbynvfWxVLQKACZp5mAaXeE-QXEd-BjTmucmH8zuDU-3rdWKf1wmNNgcJrEm2x8Q3r19/exec",
+  cliente3: "https://script.google.com/macros/s/AKfycbynvfWxVLQKACZp5mAaXeE-QXEd-BjTmucmH8zuDU-3rdWKf1wmNNgcJrEm2x8Q3r19/exec",
+};
 
-  if (path === "obtenerSaldo") {
-    url += "&usuario=" + usuario + "&clave=" + clave;
-  }
-
-  if (path === "descontarSaldo") {
-    url += "&usuario=" + usuario + "&clave=" + clave + "&cantidad=" + cantidad;
-  }
-
-  try {
-    const response = await fetch(url);
-    const data = await response.json();
-    return {
-      statusCode: 200,
-      body: JSON.stringify(data),
-    };
-  } catch (err) {
-    return {
-      statusCode: 500,
-      body: JSON.stringify({ error: err.message }),
-    };
+async function getJSON(url) {
+  const r = await fetch(url, { method: "GET" });
+  // Si Apps Script devolviera HTML por error, esto previene el crash:
+  const text = await r.text();
+  try { return JSON.parse(text); } catch {
+    return { success: false, error: "Respuesta no JSON del servidor externo", raw: text };
   }
 }
 
+async function postForm(url, paramsObj) {
+  const body = new URLSearchParams(paramsObj);
+  const r = await fetch(url, {
+    method: "POST",
+    headers: { "Content-Type": "application/x-www-form-urlencoded" },
+    body
+  });
+  const text = await r.text();
+  try { return JSON.parse(text); } catch {
+    return { success: false, error: "Respuesta no JSON del servidor externo", raw: text };
+  }
+}
 
-
-import fetch from "node-fetch";
-
-export async function handler(event, context) {
-  console.log("Función proxy multi-cliente arrancó");
-  console.log("Headers recibidos:", event.headers);
-  console.log("Body recibido:", event.body);
-
+export async function handler(event) {
   if (event.httpMethod !== "POST") {
-    return {
-      statusCode: 405,
-      body: JSON.stringify({ success: false, error: "Method Not Allowed" })
-    };
+    return { statusCode: 405, body: JSON.stringify({ success:false, error:"Method Not Allowed" }) };
   }
 
   try {
-    // Parsear datos enviados desde el HTML
-    const { accion, cantidad, cliente } = JSON.parse(event.body);
+    const { accion, usuario, clave, cliente, cantidad } = JSON.parse(event.body || "{}");
 
-    if (!accion || !cantidad || !cliente) {
+    // 1) Mostrar saldo (login/consulta)
+    if (accion === "obtenerSaldo") {
+      const url = `${VENDORS_URL}?action=obtenerSaldo&usuario=${encodeURIComponent(usuario)}&clave=${encodeURIComponent(clave)}`;
+      const data = await getJSON(url);
+      return { statusCode: 200, body: JSON.stringify(data) };
+    }
+
+    // 2) Cargar créditos a un cliente descontando saldo de vendedor (con rollback si falla)
+    if (accion === "cargarCreditos") {
+      if (!cliente || !CLIENT_SCRIPTS[cliente]) {
+        return { statusCode: 400, body: JSON.stringify({ success:false, error:"Cliente no encontrado" }) };
+      }
+      const cant = Number(cantidad || 0);
+      if (cant <= 0) {
+        return { statusCode: 400, body: JSON.stringify({ success:false, error:"Cantidad inválida" }) };
+      }
+
+      // 2.a) Descontar saldo en Vendedores
+      const descontarUrl = `${VENDORS_URL}?action=descontarSaldo&usuario=${encodeURIComponent(usuario)}&clave=${encodeURIComponent(clave)}&cantidad=${cant}`;
+      const desc = await getJSON(descontarUrl);
+      if (!desc.success) {
+        return { statusCode: 200, body: JSON.stringify(desc) };
+      }
+
+      // 2.b) Llamar al Apps Script del cliente para cargar créditos
+      const clienteUrl = CLIENT_SCRIPTS[cliente];
+      const carga = await postForm(clienteUrl, { accion: "cargarCreditos", cantidad: String(cant) });
+
+      // 2.c) Si falla la carga al cliente, hacemos rollback (devolverSaldo)
+      if (!carga || !carga.success) {
+        const rollbackUrl = `${VENDORS_URL}?action=devolverSaldo&usuario=${encodeURIComponent(usuario)}&clave=${encodeURIComponent(clave)}&cantidad=${cant}`;
+        await getJSON(rollbackUrl);
+        return { statusCode: 200, body: JSON.stringify({ success:false, error: carga?.error || "No se pudo cargar en cliente", detalle: carga }) };
+      }
+
+      // 2.d) Éxito total
       return {
-        statusCode: 400,
-        body: JSON.stringify({ success: false, error: "Faltan parámetros" })
+        statusCode: 200,
+        body: JSON.stringify({
+          success: true,
+          cliente,
+          nuevoSaldo: desc.saldo,
+          detalleCliente: carga
+        })
       };
     }
 
-    // Map de clientes a sus URLs de Apps Script
-    const urlsAppsScript = {
-      "cliente1": "https://script.google.com/macros/s/AKfycbynvfWxVLQKACZp5mAaXeE-QXEd-BjTmucmH8zuDU-3rdWKf1wmNNgcJrEm2x8Q3r19/exec",
-      "cliente2": "https://script.google.com/macros/s/AKfycbynvfWxVLQKACZp5mAaXeE-QXEd-BjTmucmH8zuDU-3rdWKf1wmNNgcJrEm2x8Q3r19/exec",
-      "cliente3": "https://script.google.com/macros/s/AKfycbynvfWxVLQKACZp5mAaXeE-QXEd-BjTmucmH8zuDU-3rdWKf1wmNNgcJrEm2x8Q3r19/exec"
-      // agregá más clientes aquí
-    };
-
-    const url = urlsAppsScript[cliente];
-    if (!url) {
-      return {
-        statusCode: 400,
-        body: JSON.stringify({ success: false, error: "Cliente no encontrado" })
-      };
-    }
-
-    // Hacer POST al Apps Script correspondiente
-    const response = await fetch(url, {
-      method: "POST",
-      headers: { "Content-Type": "application/x-www-form-urlencoded" },
-      body: new URLSearchParams({ accion, cantidad })
-    });
-
-    const data = await response.json();
-
-    return {
-      statusCode: 200,
-      body: JSON.stringify({ success: true, cliente, data })
-    };
-
-  } catch (error) {
-    console.error("Error en proxy:", error);
-    return {
-      statusCode: 500,
-      body: JSON.stringify({ success: false, error: error.toString() })
-    };
+    return { statusCode: 400, body: JSON.stringify({ success:false, error:"Acción no reconocida" }) };
+  } catch (err) {
+    return { statusCode: 500, body: JSON.stringify({ success:false, error: String(err) }) };
   }
 }
+
 
 
