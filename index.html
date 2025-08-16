@@ -1,18 +1,18 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-<meta charset="UTF-8">
-<title>TurnoX Panel Vendedor</title>
-<style>
-body { font-family: Arial, sans-serif; padding: 2rem; background: #f0f0f0; }
-form, .panel { background: #fff; padding: 2rem; border-radius: 8px; max-width: 900px; margin: 1rem auto; }
-input { padding: 0.5rem; margin-bottom: 1rem; width: 100%; }
-button { padding: 0.5rem 1rem; }
-table { width: 100%; border-collapse: collapse; margin-top: 1rem; }
-th, td { border: 1px solid #ccc; padding: 0.5rem; text-align: center; }
-th { background: #eee; }
-.hidden { display: none; }
-</style>
+  <meta charset="UTF-8">
+  <title>TurnoX Panel Vendedor</title>
+  <style>
+    body { font-family: Arial, sans-serif; padding: 2rem; background: #f0f0f0; }
+    form, .panel { background: #fff; padding: 2rem; border-radius: 8px; max-width: 900px; margin: 1rem auto; }
+    input { padding: 0.5rem; margin-bottom: 1rem; width: 100%; }
+    button { padding: 0.5rem 1rem; }
+    table { width: 100%; border-collapse: collapse; margin-top: 1rem; }
+    th, td { border: 1px solid #ccc; padding: 0.5rem; text-align: center; }
+    th { background: #eee; }
+    .hidden { display: none; }
+  </style>
 </head>
 <body>
 
@@ -86,15 +86,15 @@ loginForm.addEventListener("submit", async (e) => {
     const data = await res.json();
 
     if (data.success) {
-      // Login exitoso y filtrado
+      // Tomamos el primer vendedor devuelto, que corresponde al que se logueó
       vendedorLogueado = data.vendedores[0];
 
       // Filtramos solo sus plataformas
-      plataformasData = data.plataformas
-        .filter(p => String(p.VendedorID).trim() === String(vendedorLogueado.ID_Vendedor).trim())
-        // Agregar URL de App Script correspondiente a cada plataforma
-        .map(p => ({ ...p, url: p.URL || "PONER_AQUI_LA_URL_DE_CADA_PLATAFORMA" }));
+      plataformasData = data.plataformas.filter(p =>
+        String(p.VendedorID).trim() === String(vendedorLogueado.ID_Vendedor).trim()
+      );
 
+      // Mostrar panel
       mensaje.style.color = "green";
       mensaje.textContent = "¡Login exitoso!";
       loginForm.classList.add("hidden");
@@ -142,40 +142,44 @@ function renderPlataformas() {
   });
 }
 
-// Funcionalidad de agregar créditos
+// Función para agregar créditos a la plataforma
 window.guardarCredito = async function(i) {
   const input = tablaPlataformas.querySelectorAll("input[type=number]")[i];
-  const suma = Number(input.value);
-  if (!suma || suma <= 0) {
-    alert("Ingresa un valor válido para agregar créditos");
+  const creditosAgregar = Number(input.value || 0);
+  if (creditosAgregar <= 0) {
+    alert("Ingresá un valor válido de créditos.");
     return;
   }
 
   const plataforma = plataformasData[i];
-  if (!plataforma.url) {
-    alert("No hay URL definida para esta plataforma");
+  if (creditosAgregar > vendedorLogueado.Creditos_Disponibles) {
+    alert("No hay créditos suficientes disponibles.");
     return;
   }
 
-  const payload = {
-    usuario: plataforma.usuario,
-    creditos: suma
-  };
-
   try {
-    const res = await fetch(plataforma.url, {
+    // Llamada a la URL de la plataforma (App Script)
+    const res = await fetch(plataforma.URL, { // asumimos que cada plataformaData tiene campo URL
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(payload)
+      body: JSON.stringify({ creditos: creditosAgregar })
     });
+    const result = await res.json();
 
-    const data = await res.json(); // Asegurarse que App Script devuelva JSON
-    alert("Créditos agregados correctamente");
-    input.value = "";
+    if (result.success) {
+      // Actualizamos localmente los créditos del vendedor
+      vendedorLogueado.Creditos_Usados += creditosAgregar;
+      vendedorLogueado.Creditos_Disponibles -= creditosAgregar;
+      renderVendedor();
+      input.value = "";
+      alert(`Se agregaron ${creditosAgregar} créditos a ${plataforma.Nombre}`);
+    } else {
+      alert("Error al agregar créditos: " + (result.message || "desconocido"));
+    }
   } catch (err) {
-    alert("Error al agregar créditos: " + err.message);
+    alert("Error de conexión al agregar créditos: " + err.message);
   }
-};
+}
 </script>
 </body>
 </html>
