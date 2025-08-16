@@ -183,6 +183,23 @@
 .creditos-panel {
   display: none; /* Oculto hasta login */
 }
+
+  .btn{
+    font-family:"Montserrat",sans-serif;
+    background:#533482;
+    color:#fff;
+    border:0;
+    padding:10px 16px;
+    border-radius:8px;
+    font-weight:700;
+    cursor:pointer;
+    display:inline-block;
+    text-decoration:none;
+    box-shadow:0 3px 10px rgba(83,52,130,.25);
+    transition:transform .15s ease, box-shadow .2s ease, background .2s ease;
+  }
+  .btn:hover{ background:#6B6870; transform:translateY(-1px); box-shadow:0 6px 14px rgba(83,52,130,.35); }
+  .btn:active{ transform:translateY(0); box-shadow:0 2px 6px rgba(0,0,0,.2); }
 </style>
 </head>
 
@@ -218,7 +235,7 @@
   <input type="number" id="cantidad" value="100" min="1">
 
   <button id="cargarBtn">Cargar Créditos</button>
-<a class="btn" href="buscador/">Ir al mayorista</a>
+<a class="btn" href="buscador/">Vender</a>
   <div id="resultado"></div>
 </div>
 
