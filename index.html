@@ -2,28 +2,58 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8">
-  <title>Prueba Proxy Netlify</title>
+  <title>Login TurnoX</title>
+  <style>
+    body { font-family: Arial, sans-serif; padding: 2rem; background: #f0f0f0; }
+    form { background: #fff; padding: 2rem; border-radius: 8px; max-width: 300px; margin: auto; }
+    input { display: block; width: 100%; margin-bottom: 1rem; padding: 0.5rem; }
+    button { padding: 0.5rem 1rem; width: 100%; }
+    #mensaje { margin-top: 1rem; text-align: center; }
+  </style>
 </head>
 <body>
-  <h1>Prueba de Proxy con Netlify</h1>
-  <button id="btn">Probar conexión</button>
-  <pre id="resultado"></pre>
+  <h1 style="text-align:center;">Login TurnoX</h1>
+  <form id="loginForm">
+    <input type="text" id="usuario" placeholder="Usuario" required />
+    <input type="password" id="clave" placeholder="Clave" required />
+    <button type="submit">Iniciar sesión</button>
+    <div id="mensaje"></div>
+  </form>
 
   <script>
-document.getElementById("btn").addEventListener("click", async () => {
-  try {
-    const res = await fetch("/.netlify/functions/proxy", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ usuario: "demo", clave: "1234" }) // ejemplo
-    });
-    const data = await res.json();
-    document.getElementById("resultado").innerText = JSON.stringify(data, null, 2);
-  } catch (error) {
-    document.getElementById("resultado").innerText = "Error: " + error;
-  }
-});
-</script>
+    const form = document.getElementById("loginForm");
+    const mensaje = document.getElementById("mensaje");
 
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      mensaje.textContent = "Validando...";
+
+      const usuario = document.getElementById("usuario").value.trim();
+      const clave = document.getElementById("clave").value.trim();
+
+      try {
+        const res = await fetch("/.netlify/functions/proxy", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ usuario, clave })
+        });
+
+        const data = await res.json();
+
+        if (data.success) {
+          mensaje.style.color = "green";
+          mensaje.textContent = "¡Login exitoso!";
+          console.log("Datos del vendedor:", data.vendedores);
+          console.log("Plataformas disponibles:", data.plataformas);
+        } else {
+          mensaje.style.color = "red";
+          mensaje.textContent = data.message || "Usuario o clave incorrectos";
+        }
+      } catch (err) {
+        mensaje.style.color = "red";
+        mensaje.textContent = "Error de conexión: " + err.message;
+      }
+    });
+  </script>
 </body>
 </html>
