@@ -83,6 +83,28 @@
           body: JSON.stringify({ usuario, clave })
         });
         const data = await res.json();
+// -------------------------
+// FILTRAR DATOS DEL VENDEDOR
+// -------------------------
+if (data.success) {
+  // Guardamos el usuario que se logueó
+  const usuarioInput = document.getElementById("usuario").value.trim();
+
+  // Buscamos el vendedor logueado por su usuario
+  vendedorLogueado = data.vendedores.find(v => v.Usuario === usuarioInput);
+
+  if (!vendedorLogueado) {
+    alert("No se encontró el vendedor logueado.");
+    return;
+  }
+
+  // Filtramos solo las plataformas asignadas a ese vendedor
+  plataformasData = data.plataformas.filter(p => p.VendedorID === vendedorLogueado.ID_Vendedor);
+
+  // Ahora podemos renderizar solo sus datos
+  renderVendedor();
+  renderPlataformas();
+}
 
         if (data.success) {
           mensaje.style.color = "green";
