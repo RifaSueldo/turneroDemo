@@ -1,121 +1,209 @@
-<html><head>
-  <meta charset="UTF-8" />
-  <title>TurnoX Créditos</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<title>TurnoX Créditos</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 
-  <!-- Fuentes -->
-  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;700&display=swap" rel="stylesheet">
-  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@300..700&display=swap">
+<!-- Fuentes -->
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;700&display=swap" rel="stylesheet">
 
-  <!-- Iconos -->
-  <link rel="icon" type="image/png" href="https://i.ibb.co/p6Ycq6XC/Turnox-logo.png">
-  <link rel="icon" type="image/x-icon" href="favicon.ico">
+<!-- Iconos -->
+<link rel="icon" type="image/png" href="https://i.ibb.co/p6Ycq6XC/Turnox-logo.png">
 
-  <!-- Colores, tipografía y animaciones similares -->
-  <style>
-    html { scroll-behavior: smooth; }
-    body {
-      font-family: "Montserrat", sans-serif;
-      margin: 0;
-      padding: 0;
-      background: #f8f8f8;
-      color: #533482;
-    }
+<style>
+  html { scroll-behavior: smooth; }
+  body {
+    font-family: "Montserrat", sans-serif;
+    margin: 0;
+    padding: 0;
+    background: #f4f4f8;
+    color: #533482;
+  }
 
-    /* Navbar principal */
-    .navbar {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      background: #533482;
-      color: white;
-      padding: 10px 20px;
-      position: sticky;
-      top: 0;
-      z-index: 999;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.15);
-      backdrop-filter: blur(6px);
-    }
+  /* Navbar */
+  .navbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: linear-gradient(135deg,#533482,#6B6870);
+    color: white;
+    padding: 10px 20px;
+    position: sticky;
+    top: 0;
+    z-index: 999;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    backdrop-filter: blur(6px);
+    border-bottom-left-radius: 12px;
+    border-bottom-right-radius: 12px;
+  }
 
-    .navbar-logo img,
-    .navbar-logo p {
-      width: 130px;
-      opacity: 0;
-      transform: translateX(100px);
-      animation: slideInRight 1.2s cubic-bezier(0.25,1,0.5,0.2) forwards,
-                 saltitoSutil 6s ease-in-out 1.2s infinite;
-    }
+  .navbar-logo img {
+    width: 130px;
+    opacity: 0;
+    transform: translateX(100px);
+    animation: slideInRight 1.2s cubic-bezier(0.25,1,0.5,0.2) forwards,
+               saltitoSutil 6s ease-in-out 1.2s infinite;
+  }
 
-    @keyframes slideInRight {
-      0% { transform: translateX(100px); opacity:0; }
-      80% { transform: translateX(-10px); opacity:1; }
-      100% { transform: translateX(0); opacity:1; }
-    }
+  .navbar-logo p {
+    font-size: 11px;
+    margin: 0;
+    text-align: center;
+    opacity: 0.9;
+  }
 
-    @keyframes saltitoSutil {
-      0%,80%,100% { transform: translateY(0); }
-      85% { transform: translateY(-4px); }
-      90% { transform: translateY(0); }
-    }
+  @keyframes slideInRight {
+    0% { transform: translateX(100px); opacity:0; }
+    80% { transform: translateX(-10px); opacity:1; }
+    100% { transform: translateX(0); opacity:1; }
+  }
 
-    .navbar-menu { display: flex; gap: 20px; }
-    .navbar-menu .nav-link {
-      color: white;
-      text-decoration: none;
-      font-weight: 600;
-      font-size: 16px;
-      padding: 6px 8px;
-      border-radius: 4px;
-      transition: background-color 0.2s ease;
-    }
-    .navbar-menu .nav-link:hover { background-color: #6B6870; }
+  @keyframes saltitoSutil {
+    0%,80%,100% { transform: translateY(0); }
+    85% { transform: translateY(-4px); }
+    90% { transform: translateY(0); }
+  }
 
-    /* Botón de acceso */
-    .btn-redireccion {
-      background-color: #6B6870;
-      color: white;
-      border: none;
-      padding: 8px 15px;
-      border-radius: 5px;
-      cursor: pointer;
-      font-size: 16px;
-      transition: background 0.3s ease;
-    }
-    .btn-redireccion:hover { background-color: #533482; }
+  .navbar-action label {
+    font-weight: 500;
+    font-size: 14px;
+    display: block;
+    margin-top: 8px;
+    margin-bottom: 4px;
+  }
 
-    /* Responsive */
-    @media (max-width:768px){
-      .navbar-menu { flex-direction: column; position:absolute; top:85px; right:2px; background: rgba(54,42,111,0.95); border-radius:8px; max-height:0; overflow:hidden; transition:max-height 0.4s ease-in-out;}
-      .navbar-menu.active { max-height:300px; }
-    }
-  </style>
+  .navbar-action input {
+    width: 100%;
+    padding: 8px 10px;
+    border-radius: 6px;
+    border: 1px solid #ccc;
+    font-size: 14px;
+    margin-bottom: 10px;
+  }
+
+  .navbar-action button {
+    width: 100%;
+    padding: 10px;
+    background: #6B6870;
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: background 0.3s ease, transform 0.2s;
+  }
+
+  .navbar-action button:hover {
+    background: #533482;
+    transform: translateY(-2px);
+  }
+
+  /* Panel créditos */
+  .creditos-panel {
+    max-width: 400px;
+    margin: 30px auto;
+    background: white;
+    padding: 25px 20px;
+    border-radius: 15px;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.08);
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .creditos-panel h3 {
+    text-align: center;
+    font-size: 1.5em;
+    margin-bottom: 15px;
+    font-weight: 700;
+    background: linear-gradient(90deg, #533482, #6B6870);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+
+  .creditos-panel label {
+    font-weight: 500;
+    font-size: 14px;
+  }
+
+  .creditos-panel input,
+  .creditos-panel select {
+    width: 100%;
+    padding: 10px 12px;
+    font-size: 14px;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+    outline: none;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  }
+
+  .creditos-panel input:focus,
+  .creditos-panel select:focus {
+    border-color: #533482;
+    box-shadow: 0 0 8px rgba(83,52,130,0.2);
+  }
+
+  .creditos-panel button {
+    margin-top: 10px;
+    padding: 12px;
+    font-size: 16px;
+    font-weight: 700;
+    border-radius: 10px;
+    border: none;
+    cursor: pointer;
+    color: white;
+    background: linear-gradient(135deg,#533482,#6B6870);
+    box-shadow: 0 6px 15px rgba(83,52,130,0.3);
+    transition: transform 0.2s, box-shadow 0.3s, background 0.3s;
+  }
+
+  .creditos-panel button:hover {
+    background: linear-gradient(135deg,#6B6870,#533482);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(83,52,130,0.4);
+  }
+
+  /* Mensajes */
+  #resultado {
+    text-align: center;
+    font-weight: 600;
+    margin-top: 10px;
+  }
+
+  .success { color: #28a745; }
+  .error   { color: #ff4d4d; }
+
+  /* Responsive */
+  @media (max-width: 480px) {
+    .creditos-panel { padding: 20px 15px; margin: 20px 10px; }
+    .creditos-panel h3 { font-size: 1.3em; }
+    .navbar { flex-direction: column; gap: 10px; padding: 15px; }
+    .navbar-action button { font-size: 14px; padding: 8px; }
+  }
+</style>
 </head>
 
 <body>
-  <header class="navbar">
-    <div class="navbar-logo">
-      <img src="https://i.ibb.co/p6Ycq6XC/Turnox-logo.png" alt="Logo" />
-      <p style="text-align:center; margin:0px; font-size: 10px;">Tu Logo | Tus Colores</p>
-    </div>
-    <div class="navbar-action">
-      <!-- Login -->
-  <label>Usuario</label>
-  <input type="text" id="usuario" autocomplete="username">
-  <label>Clave</label>
-  <input type="password" id="clave" autocomplete="current-password">
-  <button id="btnLogin">Ingresar y ver saldo</button>
-    </div>
-  </header>
+<header class="navbar">
+  <div class="navbar-logo">
+    <img src="https://i.ibb.co/p6Ycq6XC/Turnox-logo.png" alt="Logo" />
+    <p>Tu Logo | Tus Colores</p>
+  </div>
+  <div class="navbar-action">
+    <label>Usuario</label>
+    <input type="text" id="usuario" autocomplete="username">
+    <label>Clave</label>
+    <input type="password" id="clave" autocomplete="current-password">
+    <button id="btnLogin">Ingresar y ver saldo</button>
+  </div>
+</header>
 
-  <div class="creditos-panel">
+<div class="creditos-panel">
   <h3>Panel de Créditos</h3>
 
-  
-  <!-- Saldo del vendedor -->
   <label>Saldo disponible</label>
   <input type="number" id="saldo" value="0" readonly>
 
-  <!-- Asignación a cliente -->
   <label>Cliente</label>
   <select id="cliente">
     <option value="cliente1">Cliente 1</option>
@@ -177,14 +265,11 @@
       resultado.className = "error";
       return;
     }
-
-    // Validación local de saldo (extra, el real se valida en el servidor)
     if (cant > Number(saldoInput.value || 0)) {
       resultado.textContent = "Saldo insuficiente. Recargá créditos.";
       resultado.className = "error";
       return;
     }
-
     try {
       const res = await fetch("/.netlify/functions/proxy", {
         method: "POST",
@@ -213,5 +298,7 @@
     }
   });
 </script>
-
+</body>
 </html>
+
+
