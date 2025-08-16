@@ -1,126 +1,110 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>TurnoX - Cargar Créditos</title>
+  <meta charset="UTF-8" />
+  <title>TurnoX Créditos</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 
+  <!-- Fuentes -->
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@300..700&display=swap">
+
+  <!-- Iconos -->
+  <link rel="icon" type="image/png" href="https://i.ibb.co/p6Ycq6XC/Turnox-logo.png">
+  <link rel="icon" type="image/x-icon" href="favicon.ico">
+
+  <!-- Colores, tipografía y animaciones similares -->
   <style>
-/* Reset básico */
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
-}
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: "Montserrat", sans-serif;
+      margin: 0;
+      padding: 0;
+      background: #f8f8f8;
+      color: #533482;
+    }
 
-/* Fondo general */
-body {
-  background: #f4f6f9;
-  color: #333;
-  display: flex;
-  justify-content: center;
-  align-items: flex-start;
-  min-height: 100vh;
-  padding: 20px;
-}
+    /* Navbar principal */
+    .navbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: #533482;
+      color: white;
+      padding: 10px 20px;
+      position: sticky;
+      top: 0;
+      z-index: 999;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+      backdrop-filter: blur(6px);
+    }
 
-/* Contenedor principal */
-.panel {
-  background: #fff;
-  width: 100%;
-  max-width: 500px;
-  border-radius: 16px;
-  box-shadow: 0 8px 18px rgba(0,0,0,0.1);
-  padding: 25px 30px;
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
-}
+    .navbar-logo img,
+    .navbar-logo p {
+      width: 130px;
+      opacity: 0;
+      transform: translateX(100px);
+      animation: slideInRight 1.2s cubic-bezier(0.25,1,0.5,0.2) forwards,
+                 saltitoSutil 6s ease-in-out 1.2s infinite;
+    }
 
-/* Título */
-.panel h1 {
-  font-size: 1.6rem;
-  font-weight: 700;
-  color: #2a3d66;
-  margin-bottom: 10px;
-  text-align: center;
-}
+    @keyframes slideInRight {
+      0% { transform: translateX(100px); opacity:0; }
+      80% { transform: translateX(-10px); opacity:1; }
+      100% { transform: translateX(0); opacity:1; }
+    }
 
-/* Labels y selects */
-label {
-  font-weight: 600;
-  margin-bottom: 6px;
-  display: block;
-  color: #444;
-}
+    @keyframes saltitoSutil {
+      0%,80%,100% { transform: translateY(0); }
+      85% { transform: translateY(-4px); }
+      90% { transform: translateY(0); }
+    }
 
-select, input[type="number"] {
-  width: 100%;
-  padding: 10px 12px;
-  border: 1px solid #ddd;
-  border-radius: 10px;
-  font-size: 1rem;
-  transition: border 0.2s;
-}
+    .navbar-menu { display: flex; gap: 20px; }
+    .navbar-menu .nav-link {
+      color: white;
+      text-decoration: none;
+      font-weight: 600;
+      font-size: 16px;
+      padding: 6px 8px;
+      border-radius: 4px;
+      transition: background-color 0.2s ease;
+    }
+    .navbar-menu .nav-link:hover { background-color: #6B6870; }
 
-select:focus, input[type="number"]:focus {
-  outline: none;
-  border-color: #4f7cff;
-  box-shadow: 0 0 0 3px rgba(79,124,255,0.2);
-}
+    /* Botón de acceso */
+    .btn-redireccion {
+      background-color: #6B6870;
+      color: white;
+      border: none;
+      padding: 8px 15px;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 16px;
+      transition: background 0.3s ease;
+    }
+    .btn-redireccion:hover { background-color: #533482; }
 
-/* Botón */
-button {
-  background: linear-gradient(135deg, #4f7cff, #3a5ed0);
-  color: white;
-  border: none;
-  padding: 12px;
-  font-size: 1rem;
-  font-weight: 600;
-  border-radius: 12px;
-  cursor: pointer;
-  transition: transform 0.15s ease, background 0.3s ease;
-}
-
-button:hover {
-  transform: scale(1.03);
-  background: linear-gradient(135deg, #3a5ed0, #2e4bb3);
-}
-
-/* Resultado / mensajes */
-#resultado {
-  padding: 12px;
-  border-radius: 10px;
-  text-align: center;
-  font-weight: 600;
-}
-
-#resultado.success {
-  background: #e2f9e5;
-  color: #2d8a4d;
-}
-
-#resultado.error {
-  background: #fde2e2;
-  color: #b52323;
-}
-
-/* Responsive */
-@media (max-width: 600px) {
-  .panel {
-    padding: 20px;
-  }
-  .panel h1 {
-    font-size: 1.4rem;
-  }
-}
-
-</style>
-
-  
+    /* Responsive */
+    @media (max-width:768px){
+      .navbar-menu { flex-direction: column; position:absolute; top:85px; right:2px; background: rgba(54,42,111,0.95); border-radius:8px; max-height:0; overflow:hidden; transition:max-height 0.4s ease-in-out;}
+      .navbar-menu.active { max-height:300px; }
+    }
+  </style>
 </head>
+
 <body>
+  <header class="navbar">
+    <div class="navbar-logo">
+      <img src="https://i.ibb.co/p6Ycq6XC/Turnox-logo.png" alt="Logo" />
+      <p style="text-align:center; margin:0px; font-size: 10px;">Tu Logo | Tus Colores</p>
+    </div>
+    <div class="navbar-action">
+      <button class="btn-redireccion" onclick="window.location.href='panel/'">
+        Acceso
+      </button>
+    </div>
+  </header>
   
 <div class="creditos-panel">
   <h3>Panel de Créditos</h3>
