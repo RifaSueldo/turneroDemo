@@ -192,7 +192,7 @@ function mostrarResultados(results) {
     row.innerHTML = `<td>${place.name}</td><td>${place.formatted_address}</td><td id="phone-${place.place_id}">...</td>`;
     tabla.appendChild(row);
 
-   // Obtener teléfono
+  // Obtener teléfono
 const request = { placeId: place.place_id, fields:['formatted_phone_number'] };
 service.getDetails(request, function(details,status){
   if(status === google.maps.places.PlacesServiceStatus.OK){
@@ -200,18 +200,24 @@ service.getDetails(request, function(details,status){
     if(details.formatted_phone_number){
       let cleanPhone = details.formatted_phone_number.replace(/\D/g,''); 
       
-      // 👇 Borrar el 0 si está al inicio
+      // 👇 Eliminar 0 inicial si existe
       if (cleanPhone.startsWith("0")) {
         cleanPhone = cleanPhone.substring(1);
       }
 
-      // Redirige a WhatsApp
-      phoneCell.innerHTML = `<a href="https://wa.me/${cleanPhone}" target="_blank">${details.formatted_phone_number}</a>`;
+      // 👇 Asegurar que queden 10 dígitos (descartando prefijos raros)
+      if (cleanPhone.length > 10) {
+        cleanPhone = cleanPhone.slice(-10);
+      }
+
+      // Mostrar ya corregido en la tabla
+      phoneCell.innerHTML = `<a href="https://wa.me/54${cleanPhone}" target="_blank">${cleanPhone}</a>`;
     } else {
       phoneCell.innerText = "No disponible";
     }
   }
 });
+
   });
 }
 
